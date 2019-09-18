@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
 
 let persons = [
   {
@@ -43,8 +46,43 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+app.post('/api/persons', (req, res) => {
+  console.log("POST request - Add a new person")
+  const newPerson = req.body
+
+  // Checking of neccessary data. This could be a different function
+  if (newPerson.name === undefined) {
+    console.log('Error: Name missing');
+
+    return res.status(400).json({
+      error: 'Person must have a name'
+    })
+  }
+
+  // Check for a dublicate name
+  if (persons.findIndex(per => per.name === newPerson.name ) >= 0) {
+    console.log('Error: Name is a dublicate');
+    return res.status(400).json({
+      error: 'Persons name already exists in the phonebook. Name must be unique'
+    })
+  }
+
+  if (newPerson.number === undefined) {
+    console.log('Error: Number missing');
+    return res.status(400).json({
+      error: 'Person must have a number'
+    })
+  }
+
+  // Random id number for new person. For now it can be same as
+  // existing persons's id number.
+  newPerson.id = Math.floor(Math.random() * Math.floor(10000))
+  persons = persons.concat(newPerson)
+  res.json(newPerson)
+})
+
 app.get('/info', (req, res) => {
-  console.log(`requested /info`);
+  console.log(`requested /info`)
   res.send(`<p>Phonebook has info for ${persons.length} people</p>` +
            `<p>${new Date()}</p>`
   )
