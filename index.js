@@ -5,7 +5,12 @@ const morgan = require('morgan')
 
 app.use(bodyParser.json())
 
-app.use(morgan('tiny'))
+// Create morgan token that contains request body
+morgan.token('data', function (req, res) {
+  return JSON.stringify(req.body)
+})
+app.use(morgan(
+  ':method :url :status :res[content-length] - :response-time ms :data'))
 
 let persons = [
   {
@@ -50,8 +55,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-  const newPerson = req.body
-
+  const newPerson = Object.assign({}, req.body)
   // Checking of neccessary data. This could be a different function
   if (newPerson.name === undefined) {
     return res.status(400).json({
