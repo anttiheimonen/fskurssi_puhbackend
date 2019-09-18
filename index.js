@@ -1,8 +1,11 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 
 app.use(bodyParser.json())
+
+app.use(morgan('tiny'))
 
 let persons = [
   {
@@ -47,13 +50,10 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-  console.log("POST request - Add a new person")
   const newPerson = req.body
 
   // Checking of neccessary data. This could be a different function
   if (newPerson.name === undefined) {
-    console.log('Error: Name missing');
-
     return res.status(400).json({
       error: 'Person must have a name'
     })
@@ -61,14 +61,12 @@ app.post('/api/persons', (req, res) => {
 
   // Check for a dublicate name
   if (persons.findIndex(per => per.name === newPerson.name ) >= 0) {
-    console.log('Error: Name is a dublicate');
     return res.status(400).json({
       error: 'Persons name already exists in the phonebook. Name must be unique'
     })
   }
 
   if (newPerson.number === undefined) {
-    console.log('Error: Number missing');
     return res.status(400).json({
       error: 'Person must have a number'
     })
@@ -82,7 +80,6 @@ app.post('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  console.log(`requested /info`)
   res.send(`<p>Phonebook has info for ${persons.length} people</p>` +
            `<p>${new Date()}</p>`
   )
