@@ -1,0 +1,35 @@
+GET https://phonenumbers-anttiheimonen.herokuapp.com/api/persons/
+
+###
+
+DELETE https://phonenumbers-anttiheimonen.herokuapp.com/api/persons/1
+
+###
+
+POST https://phonenumbers-anttiheimonen.herokuapp.com/api/persons/
+content-type: application/json
+
+{
+    "name": "Aku Ankka",
+    "number": "313"
+}
+
+###
+
+POST https://phonenumbers-anttiheimonen.herokuapp.com/api/persons/
+content-type: application/json
+
+{
+    "number": "313"
+}
+
+###
+
+POST https://phonenumbers-anttiheimonen.herokuapp.com/api/persons/
+content-type: application/json
+
+{
+    "name": "313"
+}
+
+
