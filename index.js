@@ -60,7 +60,7 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
   const newPerson = Object.assign({}, req.body)
   // Checking of neccessary data. This could be a different function
-  if (newPerson.name === undefined) {
+  if (newPerson.name === undefined || newPerson.name.trim() === "" ) {
     return res.status(400).json({
       error: 'Person must have a name'
     })
@@ -73,7 +73,7 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  if (newPerson.number === undefined) {
+  if (newPerson.number === undefined || newPerson.number.trim() === "") {
     return res.status(400).json({
       error: 'Person must have a number'
     })
