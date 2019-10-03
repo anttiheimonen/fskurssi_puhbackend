@@ -19,6 +19,8 @@ const personSchema = new mongoose.Schema({
   number: String,
 })
 
+// Modify id-field from object to string and delete
+// needles __v -field
 personSchema.set('toJSON',{
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()

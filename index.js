@@ -47,11 +47,13 @@ app.get('/api/people', (req, res) => {
 })
 
 app.get('/api/people/:id', (req, res) => {
-  const id = Number(req.params.id)
-  // Find person with given id number
-  const person = people.find(person => person.id === id)
+  // Find person with given id
+  Person.findById(req.params.id).then(person => {
+    res.json(person.toJSON())
+  })
+  // const person = people.find(person => person.id === id)
   // If person found, return it. Otherwise return status 404
-  person !== undefined ? res.json(person) : res.status(404).end()
+  // person !== undefined ? res.json(person) : res.status(404).end()
 })
 
 app.delete('/api/people/:id', (req, res) => {
