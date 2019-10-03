@@ -85,11 +85,14 @@ app.post('/api/people', (req, res) => {
     })
   }
 
-  // Random id number for new person. For now it can be same as
-  // existing people's id number.
-  newPerson.id = Math.floor(Math.random() * Math.floor(10000))
-  people = people.concat(newPerson)
-  res.json(newPerson)
+  const person = new Person({
+    name: newPerson.name,
+    number: newPerson.number,
+  })
+
+  person.save().then(savedPerson => {
+    res.json(savedPerson.toJSON())
+  })
 })
 
 app.get('/info', (req, res) => {
