@@ -17,7 +17,7 @@ morgan.token('data', function (req, res) {
 app.use(morgan(
   ':method :url :status :res[content-length] - :response-time ms :data'))
 
-let persons = [
+let people = [
   {
     "name": "Arto Hellas",
     "number": "040-123456",
@@ -40,28 +40,28 @@ let persons = [
   }
 ]
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/people', (req, res) => {
   Person.find({}).then(people => {
     res.json(people)
   })
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/people/:id', (req, res) => {
   const id = Number(req.params.id)
   // Find person with given id number
-  const person = persons.find(person => person.id === id)
+  const person = people.find(person => person.id === id)
   // If person found, return it. Otherwise return status 404
   person !== undefined ? res.json(person) : res.status(404).end()
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/people/:id', (req, res) => {
   const id = Number(req.params.id)
   // Filter out the person with given id
-  persons = persons.filter(person => person.id !== id)
+  people = people.filter(person => person.id !== id)
   res.status(204).end()
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/people', (req, res) => {
   const newPerson = Object.assign({}, req.body)
   // Checking of neccessary data. This could be a different function
   if (newPerson.name === undefined || newPerson.name.trim() === "" ) {
@@ -71,9 +71,9 @@ app.post('/api/persons', (req, res) => {
   }
 
   // Check for a dublicate name
-  if (persons.findIndex(per => per.name === newPerson.name ) >= 0) {
+  if (people.findIndex(per => per.name === newPerson.name ) >= 0) {
     return res.status(400).json({
-      error: 'Persons name already exists in the phonebook. Name must be unique'
+      error: 'Name of the person already exists in the phonebook. Name must be unique'
     })
   }
 
@@ -84,14 +84,14 @@ app.post('/api/persons', (req, res) => {
   }
 
   // Random id number for new person. For now it can be same as
-  // existing persons's id number.
+  // existing people's id number.
   newPerson.id = Math.floor(Math.random() * Math.floor(10000))
-  persons = persons.concat(newPerson)
+  people = people.concat(newPerson)
   res.json(newPerson)
 })
 
 app.get('/info', (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people</p>` +
+  res.send(`<p>Phonebook has info for ${people.length} people</p>` +
            `<p>${new Date()}</p>`
   )
 })
