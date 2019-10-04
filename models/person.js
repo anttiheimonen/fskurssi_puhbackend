@@ -6,7 +6,9 @@ console.log(url);
 
 console.log('connecting to', url)
 
-mongoose.connect(url, { useNewUrlParser: true })
+// Mongoose's setting 'useUnifiedTopology: true' is needed to avoid use of
+// deprecated 'server discovery and monitoring engine' and a warning message
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(result => {
     console.log('connected to MongoDB')
   })

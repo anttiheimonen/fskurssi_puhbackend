@@ -46,21 +46,25 @@ app.get('/api/people', (req, res) => {
   })
 })
 
-app.get('/api/people/:id', (req, res) => {
+app.get('/api/people/:id', (req, res, next) => {
   // Find person with given id
-  Person.findById(req.params.id).then(person => {
-    res.json(person.toJSON())
+  Person.findById(req.params.id)
+    .then(person => {
+      if(person) {
+        res.json(person.toJSON())
+      } else  {
+        res.status(404).end()
+      }
   })
-  // const person = people.find(person => person.id === id)
-  // If person found, return it. Otherwise return status 404
-  // person !== undefined ? res.json(person) : res.status(404).end()
+  .catch( error => next(error))
 })
 
-app.delete('/api/people/:id', (req, res) => {
-  const id = Number(req.params.id)
-  // Filter out the person with given id
-  people = people.filter(person => person.id !== id)
-  res.status(204).end()
+app.delete('/api/people/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.static(204).end()
+    })
+    .catch( error => next(error))
 })
 
 app.post('/api/people', (req, res) => {
@@ -100,6 +104,26 @@ app.get('/info', (req, res) => {
            `<p>${new Date()}</p>`
   )
 })
+
+// Handle requests to unknown endpoint
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'endpoint not known' })
+}
+
+app.use(unknownEndpoint)
+
+// Handle error's in requests
+const errorHandler = (error, request, response, next) => {
+  console.log(`Error: ${error.message}`)
+
+  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
