@@ -76,18 +76,10 @@ app.delete('/api/people/:id', (req, res, next) => {
 app.post('/api/people', (req, res, next) => {
   const newPerson = Object.assign({}, req.body)
 
-
   // Checking of neccessary data. This could be a different function
   if (newPerson.name === undefined || newPerson.name.trim() === "" ) {
     return res.status(400).json({
       error: 'Person must have a name'
-    })
-  }
-
-  // Check for a dublicate name
-  if (people.findIndex(per => per.name === newPerson.name ) >= 0) {
-    return res.status(400).json({
-      error: 'Name of the person already exists in the phonebook. Name must be unique'
     })
   }
 
@@ -97,14 +89,24 @@ app.post('/api/people', (req, res, next) => {
     })
   }
 
-  const person = new Person({
-    name: newPerson.name,
-    number: newPerson.number,
-  })
-
-  person.save()
-    .then(savedPerson => {
-      res.json(savedPerson.toJSON())
+  // Check that person with the same name does not exist in database.
+  // Name checking is case sensitive at the moment.
+  Person.find({"name": newPerson.name })
+    .then(people => {
+      if (people.length > 0) {
+        return res.status(400).json({
+          error: 'Name of the person already exists in the phonebook. Name must be unique'
+        })
+      }
+      const person = new Person({
+        name: newPerson.name,
+        number: newPerson.number,
+      })
+      person.save()
+        .then(savedPerson => {
+          res.json(savedPerson.toJSON())
+        })
+        .catch( error => next(error))
     })
     .catch( error => next(error))
 })
@@ -123,9 +125,12 @@ app.put('/api/people/:id', (req, res, next) => {
 })
 
 app.get('/info', (req, res) => {
-  res.send(`<p>Phonebook has info for ${people.length} people</p>` +
-           `<p>${new Date()}</p>`
-  )
+  Person.countDocuments()
+    .then( count => {
+      res.send(`<p>Phonebook has info for ${count} people</p>` +
+               `<p>${new Date()}</p>`
+      )
+    })
 })
 
 // Handle requests to unknown endpoint
