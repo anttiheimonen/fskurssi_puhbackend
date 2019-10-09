@@ -41,10 +41,12 @@ let people = [
 ]
 
 // Get json-object of all people
-app.get('/api/people', (req, res) => {
-  Person.find({}).then(people => {
-    res.json(people)
-  })
+app.get('/api/people', (req, res, next) => {
+  Person.find({})
+    .then(people => {
+      res.json(people)
+    })
+    .catch( error => next(error))
 })
 
 // Get info of single person
@@ -57,8 +59,8 @@ app.get('/api/people/:id', (req, res, next) => {
       } else  {
         res.status(404).end()
       }
-  })
-  .catch( error => next(error))
+    })
+    .catch( error => next(error))
 })
 
 // Delete single person
@@ -71,8 +73,10 @@ app.delete('/api/people/:id', (req, res, next) => {
 })
 
 // Add a new person
-app.post('/api/people', (req, res) => {
+app.post('/api/people', (req, res, next) => {
   const newPerson = Object.assign({}, req.body)
+
+
   // Checking of neccessary data. This could be a different function
   if (newPerson.name === undefined || newPerson.name.trim() === "" ) {
     return res.status(400).json({
@@ -98,9 +102,11 @@ app.post('/api/people', (req, res) => {
     number: newPerson.number,
   })
 
-  person.save().then(savedPerson => {
-    res.json(savedPerson.toJSON())
-  })
+  person.save()
+    .then(savedPerson => {
+      res.json(savedPerson.toJSON())
+    })
+    .catch( error => next(error))
 })
 
 // Update person's number
