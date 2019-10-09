@@ -40,12 +40,14 @@ let people = [
   }
 ]
 
+// Get json-object of all people
 app.get('/api/people', (req, res) => {
   Person.find({}).then(people => {
     res.json(people)
   })
 })
 
+// Get info of single person
 app.get('/api/people/:id', (req, res, next) => {
   // Find person with given id
   Person.findById(req.params.id)
@@ -59,14 +61,16 @@ app.get('/api/people/:id', (req, res, next) => {
   .catch( error => next(error))
 })
 
+// Delete single person
 app.delete('/api/people/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
-      res.static(204).end()
+      res.status(204).end()
     })
     .catch( error => next(error))
 })
 
+// Add a new person
 app.post('/api/people', (req, res) => {
   const newPerson = Object.assign({}, req.body)
   // Checking of neccessary data. This could be a different function
@@ -97,6 +101,19 @@ app.post('/api/people', (req, res) => {
   person.save().then(savedPerson => {
     res.json(savedPerson.toJSON())
   })
+})
+
+// Update person's number
+app.put('/api/people/:id', (req, res, next) => {
+  const person = {
+    number: req.body.number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON())
+    })
+    .catch( error => next(error))
 })
 
 app.get('/info', (req, res) => {
