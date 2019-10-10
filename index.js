@@ -53,37 +53,13 @@ app.delete('/api/people/:id', (req, res, next) => {
 app.post('/api/people', (req, res, next) => {
   const newPerson = Object.assign({}, req.body)
 
-  // Checking of neccessary data. This could be a different function
-  if (newPerson.name === undefined || newPerson.name.trim() === "" ) {
-    return res.status(400).json({
-      error: 'Person must have a name'
-    })
-  }
-
-  if (newPerson.number === undefined || newPerson.number.trim() === "") {
-    return res.status(400).json({
-      error: 'Person must have a number'
-    })
-  }
-
-  // Check that person with the same name does not exist in database.
-  // Name checking is case sensitive at the moment.
-  Person.find({"name": newPerson.name })
-    .then(people => {
-      if (people.length > 0) {
-        return res.status(400).json({
-          error: 'Name of the person already exists in the phonebook. Name must be unique'
-        })
-      }
-      const person = new Person({
-        name: newPerson.name,
-        number: newPerson.number,
-      })
-      person.save()
-        .then(savedPerson => {
-          res.json(savedPerson.toJSON())
-        })
-        .catch( error => next(error))
+  const person = new Person({
+    name: newPerson.name,
+    number: newPerson.number,
+  })
+  person.save()
+    .then(savedPerson => {
+      res.json(savedPerson.toJSON())
     })
     .catch( error => next(error))
 })
@@ -94,7 +70,7 @@ app.put('/api/people/:id', (req, res, next) => {
     number: req.body.number,
   }
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
       res.json(updatedPerson.toJSON())
     })
@@ -123,6 +99,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({error: error.message})
   }
 
   next(error)
