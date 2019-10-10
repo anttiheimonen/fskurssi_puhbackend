@@ -10,12 +10,11 @@ DELETE http://localhost:3001/api/people/5d9dfa2a0968e111f48e02dc
 
 ###
 
-PUT http://localhost:3001/api/people/5d9e0ec75563a71984b44c6c
+PUT http://localhost:3001/api/people/5d9efa64fa81ff110bc929cd
 content-type: application/json
 
 {
-    "name": "Aku Ankka",
-    "number": "123",
+    "number": "1234",
     "id": "5d9e0ec75563a71984b44c6c"
 }
 
@@ -26,7 +25,7 @@ content-type: application/json
 
 {
     "name": "Aku Ankka",
-    "number": "3131"
+    "number": "311"
 }
 
 ###

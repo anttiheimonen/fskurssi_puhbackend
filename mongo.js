@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 // Program prints list of people from phonebook or adds a new person's info.
 // Argument array contains [2] password, [3] person's name,
 // [4] phone number.
-if ( process.argv.length != 3 && process.argv.length != 5 ) {
+if ( process.argv.length !== 3 && process.argv.length !== 5 ) {
   console.log('Ohje:')
-  console.log('node mongo.js salasana --Tulostaa puhelinluettelon henkilöt');
-  console.log('node mongo.js salasana nimi puhelinnumero -- Lisää uuden henkilön puhelinluetteloon');
+  console.log('node mongo.js salasana --Tulostaa puhelinluettelon henkilöt')
+  console.log('node mongo.js salasana nimi puhelinnumero -- Lisää uuden henkilön puhelinluetteloon')
 
   process.exit(1)
 }
@@ -25,20 +25,20 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model('Person', personSchema)
 
 // Add a new person to database
-if (process.argv.length == 5){
+if (process.argv.length === 5){
   const person = new Person({
     name: process.argv[3],
     number: process.argv[4],
   })
 
-  person.save().then(response => {
+  person.save().then(() => {
     console.log('Lisätty')
     mongoose.connection.close()
   })
 }
 
 // Get a list of people from database
-if (process.argv.length == 3){
+if (process.argv.length === 3){
   Person.find({}).then(result => {
     console.log('phonebook:')
     result.forEach(person => {

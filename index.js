@@ -11,7 +11,7 @@ app.use(express.static('build'))
 app.use(bodyParser.json())
 
 // Create morgan token that contains request body
-morgan.token('data', function (req, res) {
+morgan.token('data', function (req) {
   return JSON.stringify(req.body)
 })
 app.use(morgan(
@@ -43,7 +43,7 @@ app.get('/api/people/:id', (req, res, next) => {
 // Delete single person
 app.delete('/api/people/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch( error => next(error))
@@ -65,8 +65,8 @@ app.post('/api/people', (req, res, next) => {
 })
 
 // Update person's number
-app.put('/api/people/:id', (req, res, next) => {
-  const person = {
+app.put('/api/people/:id', (req, res, next) => {
+  const person = {
     number: req.body.number,
   }
 
@@ -97,10 +97,10 @@ app.use(unknownEndpoint)
 const errorHandler = (error, request, response, next) => {
   console.log(`Error: ${error.message}`)
 
-  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
-    return response.status(400).json({error: error.message})
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
